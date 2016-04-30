@@ -222,9 +222,15 @@ streznik.post('/prijava', function(zahteva, odgovor) {
       msg = "Prišlo je do napake pri registraciji nove stranke. Prosim preverite vnešene podatke in poskusite znova.";
       napaka2 = true;
     }
-  
-    odgovor.redirect('/prijava');
-    odgovor.end();
+    
+    //popravi!
+    //ne sme klicat redirect na (/prijava s sporocilom: msg) ker ostane sporocilo - msg nespremenjen do ponovnega klica te funkcije,
+    //ob osvezevanju/vrnitvi na stran /prijava vedno izpise zadnje sporocilo, render znotraj funkcije
+    vrniStranke(function(napaka1, stranke) {
+      vrniRacune(function(napaka2, racuni) {
+        odgovor.render('prijava', {sporocilo: msg, seznamStrank: stranke, seznamRacunov: racuni});  
+      }) 
+    });
   });
 })
 
@@ -232,7 +238,7 @@ streznik.post('/prijava', function(zahteva, odgovor) {
 streznik.get('/prijava', function(zahteva, odgovor) {
   vrniStranke(function(napaka1, stranke) {
       vrniRacune(function(napaka2, racuni) {
-        odgovor.render('prijava', {sporocilo: msg, seznamStrank: stranke, seznamRacunov: racuni});  
+        odgovor.render('prijava', {sporocilo: "", seznamStrank: stranke, seznamRacunov: racuni});  
       }) 
     });
 })
